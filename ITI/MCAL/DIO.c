@@ -1,9 +1,3 @@
-/*
- * DIO.c
- *
- *  Created on: Jul 21, 2024
- *      Author: asera
- */
 #include "../COMMON/DATA_TYPE.h"
 #include "../COMMON/BIT_MATH.h"
 #include "ATMEGA32.h"
