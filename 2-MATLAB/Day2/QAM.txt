@@ -1,0 +1,37 @@
+SNR = -10:1:15;
+BER = [];
+dmin=2;
+M=4;
+Es=(M-1)*dmin^2/(6*log2(M)) ;
+for k = SNR
+    %Bit stream
+    bits = randi([0, 1], 1, 1000);
+    %Transmitted symbols
+    mat = reshape(bits, 2, []);
+    I = (mat(1, :)*2-1);
+    Q = (mat(2, :)*2-1);
+    symbol = I + 1i*Q;
+    %% generate noise 
+    snr_linear=10^(k/10);
+    No=Es/snr_linear;
+    Noise=sqrt(No/2)*( randn(size(symbol)) + 1i * randn(size(symbol)) );
+    %Received symbols
+    Rx=symbol+Noise;
+    %Demodulation
+    Ix = real(Rx);
+    Ix(Ix>0) = 1;
+    Ix(Ix<0) = 0;
+    Qx = imag(Rx);
+    Qx(Qx>0) = 1;
+    Qx(Qx<0) = 0;
+    R_bits = [Ix; Qx];
+    R_bits = reshape(R_bits, 1, []);
+    %Clc Bit Error Rate
+    numError = sum(R_bits ~= bits);
+    BER = [BER, numError/length(bits)];
+end
+%Plot the curve
+semilogy(SNR,BER)
+title('QAM')
+xlabel('SNR')
+ylabel('BER')

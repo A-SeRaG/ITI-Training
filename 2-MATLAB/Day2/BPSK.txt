@@ -1,0 +1,30 @@
+SNR = -10:1:15;
+BER = [];
+for k = SNR
+    %Bit stream
+    bits = randi([0,1],10000,1);
+    %Transmitted symbols
+    Tx = bits;
+    Tx(Tx==0) = -1;
+    %% generate noise 
+    dmin=2;
+    M=2; % modulation order 2 case BPSK
+    Eb=(M-1)*dmin^2/(6*log2(M)) ;  % energy of bit
+    snr_linear=10^(k/10);
+    No=Eb/snr_linear;
+    Noise=sqrt(No/2 )*( randn(size(bits)) + 1i * randn(size(bits)) );
+    %Received symbols
+    Rx=Tx+Noise;
+    %Demodulation
+    I = real(Rx);
+    I(I>0) = 1;
+    I(I<0) = 0;
+    %Clc Bit Error Rate
+    numError = sum(I ~= bits);
+    BER = [BER, numError/length(bits)];
+end
+%Plot the curve
+semilogy(SNR,BER)
+title('BPSK')
+xlabel('SNR')
+ylabel('BER')
