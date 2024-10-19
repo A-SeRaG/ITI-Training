@@ -1,0 +1,64 @@
+%% Constants
+snr = 0:20;
+ber_4b  = [];
+ber_4g  = [];
+ber_16b = [];
+ber_16g = [];
+nums = 1e6;
+
+for i = 1:21
+    %% 4-QAM
+    M = 4;
+    bits1 = randi([0 M-1], nums, 1);
+    % Inputtybe = 'bin'
+    X_b = qammod(bits1, M, 'bin');
+    data1 = awgn(X_b, snr(i));
+    qam_4_b = qamdemod(data1, M, 'bin');
+    ber_4b(i) = (sum(bits1 ~= qam_4_b))/nums;
+    
+    % Inputtybe = 'gray'
+    X_g = qammod(bits1, M, 'gray');
+    data2 = awgn(X_g, snr(i));
+    qam_4_g = qamdemod(data2, M, 'bin');
+    ber_4g(i) = (sum(bits1 ~= qam_4_g))/nums;
+    
+
+    %% 16-QAM
+    O = 16;
+    bits2 = randi([0 O-1], nums*2, 1);
+    % Inputtybe = 'bin'
+    Y_b = qammod(bits2, O, 'bin');
+    data3 = awgn(Y_b, snr(i));
+    qam_16_b = qamdemod(data3, O, 'bin');
+    ber_16b(i) = (sum(bits2 ~= qam_16_b))/(2*nums);
+    
+    % Inputtybe = 'gray'
+    Y_g = qammod(bits2, O, 'gray');
+    data4 = awgn(Y_g, snr(i));
+    qam_16_g = qamdemod(data4, O, 'gray');
+    ber_16g(i) = (sum(bits2 ~= qam_16_g))/(2*nums);
+
+end
+
+%% plot the curves
+%4-QAM
+figure;
+semilogy(snr, ber_4b);
+hold on;
+semilogy(snr, ber_4g);
+hold off;
+grid on;
+xlabel('SNR (dB)');
+ylabel('Bit Error Rate (BER)');
+title('4-QAM');
+
+%16-QAM
+figure;
+semilogy(snr, ber_16b);
+hold on;
+semilogy(snr, ber_16g);
+hold off;
+grid on;
+xlabel('SNR (dB)');
+ylabel('Bit Error Rate (BER)');
+title('16-QAM');
